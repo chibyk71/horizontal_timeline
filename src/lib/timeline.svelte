@@ -55,8 +55,6 @@ onMount(() => {
     oldDateIndex = Util.getIndexInArray($dates, $selectedDate);
     newDateIndex = oldDateIndex;
 
-    // let dateValues = parseDate(date);
-    let minLapse = calcMinLapse($dates);
     lineLength = ($dates.length * eventsMaxDistance)  + eventsMinDistance;
     line.style.width = (lineLength) + 'px';
     selectNewDate(newDateIndex);
@@ -77,31 +75,6 @@ function formatDate(date:number|string) {
     return new Date(date).toDateString()
 }
 
-// function initTimeline(dates: number[], date: NodeListOf < E > , minLapse: number) {
-//     // set dates left position
-//     // let left = 0;
-//     // for (let i = 0; i < dates.length; i++) {
-//     //     let j = (i == 0) ? 0 : i - 1;
-//     //     let distance = daydiff(dates[j], dates[i]),
-//     //         distanceNorm = (Math.round(distance / minLapse) + 2) * eventsMinDistance;
-//     //     // console.log(distance+" "+ minLapse);
-//     //     if (distanceNorm < eventsMinDistance) {
-//     //         distanceNorm = eventsMinDistance;
-//     //     } else if (distanceNorm > eventsMaxDistance) {
-//     //         distanceNorm = eventsMaxDistance;
-//     //     }
-//     //     left += distanceNorm;
-//     //     date[i].setAttribute('style', 'left:' + left + 'px');
-
-//     // }
-
-//     // set line/filling line dimensions
-//     // todo: line.style.width = (left + eventsMinDistance) + 'px';
-//     // console.log(line);
-//     // reveal timeline
-//     // Util.addClass(element, 'timeline--loaded');
-// };
-
 function initEvents(content: NodeListOf < E > , newDateIndex: number, oldDateIndex: any) {
     //swipe on timeline
     new SwipeContent(datesContainer);
@@ -111,13 +84,6 @@ function initEvents(content: NodeListOf < E > , newDateIndex: number, oldDateInd
     datesContainer.addEventListener('swipeRight', function(event: any) {
         translateTimeline('prev');
     });
-
-    //select a new event
-    for (let i = 0; i < content.length; i++) {
-        content[i].addEventListener('animationend', function(event) {
-            if (i == newDateIndex && newDateIndex != oldDateIndex) resetAnimation(newDateIndex, oldDateIndex);
-        });
-    }
 };
 
 function updateFilling() { // update fillingLine scale value
@@ -140,8 +106,6 @@ function selectNewDate(target: number) {
     oldDateIndex = newDateIndex; // ned date has been selected -> update timeline
     newDateIndex = target;
     $selectedDate = $dates[newDateIndex];
-    // updateOlderEvents($dates, newDateIndex);
-    // updateVisibleContent(newDateIndex, oldDateIndex);
     updateFilling();
 };
 
@@ -171,38 +135,6 @@ function elementInViewport(el: E) {
         (left + width) > window.pageXOffset
     );
 }
-
-// function updateOlderEvents(date: string | any[] | NodeListOf < HTMLElement > , newDateIndex: number) { // update older events style
-//     for (var i = 0; i < date.length; i++) {
-//         (i < newDateIndex) ? Util.addClass(date[i], 'timeline__date--older-event'):
-//             Util.removeClass(date[i], 'timeline__date--older-event');
-//     }
-// };
-
-// function updateVisibleContent(newDateIndex: number, oldDateIndex: number) { // show content of new selected date
-//     let classEntering = 'selected',
-//         classLeaving = '';
-//     if (newDateIndex > oldDateIndex) {
-//         classEntering = 'selected enter-right',
-//             classLeaving = 'leave-left';
-//     } else if (newDateIndex < oldDateIndex) {
-//         classEntering = 'selected enter-left',
-//             classLeaving = 'leave-right';
-//     }
-
-//     Util.addClass(content[newDateIndex], classEntering);
-//     if (newDateIndex != oldDateIndex) {
-//         Util.removeClass(content[oldDateIndex], 'selected');
-//         Util.addClass(content[oldDateIndex], classLeaving);
-//         contentWrapper.style.height = content[newDateIndex].offsetHeight + 'px';
-//     }
-// };
-
-function resetAnimation(newDateIndex: number, oldDateIndex: number) { // reset content classes when entering animation is over
-    contentWrapper.style.height = "";
-    Util.removeClass(content[newDateIndex], 'timeline__event--enter-right timeline__event--enter-left');
-    Util.removeClass(content[oldDateIndex], 'timeline__event--leave-right timeline__event--leave-left');
-};
 
 function keyNavigateTimeline(direction: string) { // navigate the timeline using the keyboard
     var newIndex = (direction == 'next') ? newDateIndex + 1 : newDateIndex - 1;
@@ -246,17 +178,6 @@ function daydiff(first: number, second: number) { // time distance between event
                             class="timeline__date" class:timeline__date--older-event={index < newDateIndex}>{formatDate(item)}</a></li>
                         {/each}
                     {/if}
-                    <!-- <li><a href="#0" data-date="16/01/2014" class="timeline__date timeline__date--selected">16 Jan</a></li>
-                    <li><a href="#0" data-date="28/02/2014" class="timeline__date">28 Feb</a></li>
-                    <li><a h/ref="#0" data-date="20/04/2014" class="timeline__date">20 Mar</a></li>
-                    <li><a href="#0" data-date="20/05/2014" class="timeline__date">20 May</a></li>
-                    <li><a href="#0" data-date="09/07/2014" class="timeline__date">09 Jul</a></li>
-                    <li><a href="#0" data-date="30/08/2014" class="timeline__date">30 Aug</a></li>
-                    <li><a href="#0" data-date="15/09/2014" class="timeline__date">15 Sep</a></li>
-                    <li><a href="#0" data-date="01/11/2014" class="timeline__date">01 Nov</a></li>
-                    <li><a href="#0" data-date="10/12/2014" class="timeline__date">10 Dec</a></li>
-                    <li><a href="#0" data-date="19/01/2015" class="timeline__date">29 Jan</a></li>
-                    <li><a href="#0" data-date="03/03/2015" class="timeline__date">3 Mar</a></li> -->
                 </ol>
 
                 <span bind:this={fillingLine} class="timeline__filling-line" aria-hidden="true"></span>
@@ -273,115 +194,6 @@ function daydiff(first: number, second: number) { // time distance between event
             {#each [0,1,2,3,4,5,6,7,8,9] as item}
                  <Event {oldDateIndex} {newDateIndex} date={`28/${item+1}/2014`} />
             {/each}
-            <!-- <li class="timeline__event timeline__event--selected text-component">
-                <div class="timeline__event-content container">
-                    <h1 class="timeline__event-title">Horizontal Timeline</h1>
-                    <em class="timeline__event-date">January 16th, 2014</em>
-                    <p class="timeline__event-description color-contrast-medium">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum praesentium officia, fugit recusandae ipsa, quia velit nulla adipisci? Consequuntur aspernatur at, eaque hic repellendus sit dicta consequatur quae, ut harum ipsam molestias maxime non nisi reiciendis eligendi! Doloremque quia pariatur harum ea amet quibusdam quisquam, quae, temporibus dolores porro doloribus.
-                    </p>
-                </div>
-            </li>
-
-            <li class="timeline__event text-component">
-                <div class="timeline__event-content container">
-                    <h2 class="timeline__event-title">Event title here</h2>
-                    <em class="timeline__event-date">February 28th, 2014</em>
-                    <p class="timeline__event-description color-contrast-medium">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum praesentium officia, fugit recusandae ipsa, quia velit nulla adipisci? Consequuntur aspernatur at, eaque hic repellendus sit dicta consequatur quae, ut harum ipsam molestias maxime non nisi reiciendis eligendi! Doloremque quia pariatur harum ea amet quibusdam quisquam, quae, temporibus dolores porro doloribus.
-                    </p>
-                </div>
-            </li>
-
-            <li class="timeline__event text-component">
-                <div class="timeline__event-content container">
-                    <h2 class="timeline__event-title">Event title here</h2>
-                    <em class="timeline__event-date">March 20th, 2014</em>
-                    <p class="timeline__event-description color-contrast-medium">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum praesentium officia, fugit recusandae ipsa, quia velit nulla adipisci? Consequuntur aspernatur at, eaque hic repellendus sit dicta consequatur quae, ut harum ipsam molestias maxime non nisi reiciendis eligendi! Doloremque quia pariatur harum ea amet quibusdam quisquam, quae, temporibus dolores porro doloribus.
-                    </p>
-                </div>
-            </li>
-
-            <li class="timeline__event text-component">
-                <div class="timeline__event-content container">
-                    <h2 class="timeline__event-title">Event title here</h2>
-                    <em class="timeline__event-date">May 20th, 2014</em>
-                    <p class="timeline__event-description color-contrast-medium">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum praesentium officia, fugit recusandae ipsa, quia velit nulla adipisci? Consequuntur aspernatur at, eaque hic repellendus sit dicta consequatur quae, ut harum ipsam molestias maxime non nisi reiciendis eligendi! Doloremque quia pariatur harum ea amet quibusdam quisquam, quae, temporibus dolores porro doloribus.
-                    </p>
-                </div>
-            </li>
-
-            <li class="timeline__event text-component">
-                <div class="timeline__event-content container">
-                    <h2 class="timeline__event-title">Event title here</h2>
-                    <em class="timeline__event-date">July 9th, 2014</em>
-                    <p class="timeline__event-description color-contrast-medium">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum praesentium officia, fugit recusandae ipsa, quia velit nulla adipisci? Consequuntur aspernatur at, eaque hic repellendus sit dicta consequatur quae, ut harum ipsam molestias maxime non nisi reiciendis eligendi! Doloremque quia pariatur harum ea amet quibusdam quisquam, quae, temporibus dolores porro doloribus.
-                    </p>
-                </div>
-            </li>
-
-            <li class="timeline__event text-component">
-                <div class="timeline__event-content container">
-                    <h2 class="timeline__event-title">Event title here</h2>
-                    <em class="timeline__event-date">August 30th, 2014</em>
-                    <p class="timeline__event-description color-contrast-medium">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum praesentium officia, fugit recusandae ipsa, quia velit nulla adipisci? Consequuntur aspernatur at, eaque hic repellendus sit dicta consequatur quae, ut harum ipsam molestias maxime non nisi reiciendis eligendi! Doloremque quia pariatur harum ea amet quibusdam quisquam, quae, temporibus dolores porro doloribus.
-                    </p>
-                </div>
-            </li>
-
-            <li class="timeline__event text-component">
-                <div class="timeline__event-content container">
-                    <h2 class="timeline__event-title">Event title here</h2>
-                    <em class="timeline__event-date">September 15th, 2014</em>
-                    <p class="timeline__event-description color-contrast-medium">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum praesentium officia, fugit recusandae ipsa, quia velit nulla adipisci? Consequuntur aspernatur at, eaque hic repellendus sit dicta consequatur quae, ut harum ipsam molestias maxime non nisi reiciendis eligendi! Doloremque quia pariatur harum ea amet quibusdam quisquam, quae, temporibus dolores porro doloribus.
-                    </p>
-                </div>
-            </li>
-
-            <li class="timeline__event text-component">
-                <div class="timeline__event-content container">
-                    <h2 class="timeline__event-title">Event title here</h2>
-                    <em class="timeline__event-date">November 1st, 2014</em>
-                    <p class="timeline__event-description color-contrast-medium">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum praesentium officia, fugit recusandae ipsa, quia velit nulla adipisci? Consequuntur aspernatur at, eaque hic repellendus sit dicta consequatur quae, ut harum ipsam molestias maxime non nisi reiciendis eligendi! Doloremque quia pariatur harum ea amet quibusdam quisquam, quae, temporibus dolores porro doloribus.
-                    </p>
-                </div>
-            </li>
-
-            <li class="timeline__event text-component">
-                <div class="timeline__event-content container">
-                    <h2 class="timeline__event-title">Event title here</h2>
-                    <em class="timeline__event-date">December 10th, 2014</em>
-                    <p class="timeline__event-description color-contrast-medium">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum praesentium officia, fugit recusandae ipsa, quia velit nulla adipisci? Consequuntur aspernatur at, eaque hic repellendus sit dicta consequatur quae, ut harum ipsam molestias maxime non nisi reiciendis eligendi! Doloremque quia pariatur harum ea amet quibusdam quisquam, quae, temporibus dolores porro doloribus.
-                    </p>
-                </div>
-            </li>
-
-            <li class="timeline__event text-component">
-                <div class="timeline__event-content container">
-                    <h2 class="timeline__event-title">Event title here</h2>
-                    <em class="timeline__event-date">January 29th, 2015</em>
-                    <p class="timeline__event-description color-contrast-medium">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum praesentium officia, fugit recusandae ipsa, quia velit nulla adipisci? Consequuntur aspernatur at, eaque hic repellendus sit dicta consequatur quae, ut harum ipsam molestias maxime non nisi reiciendis eligendi! Doloremque quia pariatur harum ea amet quibusdam quisquam, quae, temporibus dolores porro doloribus.
-                    </p>
-                </div>
-            </li>
-
-            <li class="timeline__event text-component">
-                <div class="timeline__event-content container">
-                    <h2 class="timeline__event-title">Event title here</h2>
-                    <em class="timeline__event-date">March 3rd, 2015</em>
-                    <p class="timeline__event-description color-contrast-medium">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum praesentium officia, fugit recusandae ipsa, quia velit nulla adipisci? Consequuntur aspernatur at, eaque hic repellendus sit dicta consequatur quae, ut harum ipsam molestias maxime non nisi reiciendis eligendi! Doloremque quia pariatur harum ea amet quibusdam quisquam, quae, temporibus dolores porro doloribus.
-                    </p>
-                </div>
-            </li> -->
         </ol>
     </div> <!-- .timeline__events -->
 </section>
