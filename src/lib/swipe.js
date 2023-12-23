@@ -1,4 +1,3 @@
-
 // Swipe Content Plugin - by CodyHouse.co
 // https://codyhouse.co/ds/components/info/swipe-content
 export class SwipeContent {
