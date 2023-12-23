@@ -117,11 +117,11 @@ Util.moveFocus = function (element) {
   Misc
 */
 
-Util.getIndexInArray = function(array, el) {
+Util.getIndexInArray = function(/** @type {any[]} */ array, /** @type {any} */ el) {
   return Array.prototype.indexOf.call(array, el);
 };
 
-Util.cssSupports = function(property, value) {
+Util.cssSupports = function(/** @type {string} */ property, /** @type {string} */ value) {
   if('CSS' in window) {
     return CSS.supports(property, value);
   } else {
@@ -168,9 +168,9 @@ Util.cssSupports = function(property, value) {
 /* 
 	Animation curves
 */
-Math.easeInOutQuad = function (t, b, c, d) {
-	t /= d/2;
-	if (t < 1) return c/2*t*t + b;
-	t--;
-	return -c/2 * (t*(t-2) - 1) + b;
-};
+// Math.easeInOutQuad = function (t, b, c, d) {
+// 	t /= d/2;
+// 	if (t < 1) return c/2*t*t + b;
+// 	t--;
+// 	return -c/2 * (t*(t-2) - 1) + b;
+// };

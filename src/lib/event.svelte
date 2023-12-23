@@ -1,0 +1,40 @@
+<script lang="ts">
+	import { onMount } from "svelte";
+    import {  dates, parseDate } from "$lib/timeline.svelte"
+
+    export let date: number|string = "";
+    export let newDateIndex:number;
+    export let oldDateIndex:number;
+	let id:number,classEntering:string,classLeaving:string;
+    onMount(() =>{
+		date = new Date(parseDate(date as string)).getTime();
+        $dates.push(date)
+		id = $dates.indexOf(date)
+        if (newDateIndex > oldDateIndex) {
+			classEntering = 'timeline__event--selected timeline__event--enter-right'
+			classLeaving = 'timeline__event--leave-left';
+		} else if(newDateIndex < oldDateIndex) {
+			classEntering = 'timeline__event--selected timeline__event--enter-left'
+			classLeaving = 'timeline__event--leave-right';
+		} else {
+			classEntering = 'timeline__event--selected'
+			classLeaving = '';
+		}
+
+		// Util.addClass(content[newDateIndex], classEntering);
+		// if (newDateIndex != oldDateIndex) {
+		// 	Util.removeClass(content[oldDateIndex], 'timeline__event--selected');
+		// 	Util.addClass(content[oldDateIndex], classLeaving);
+		// 	contentWrapper.style.height = content[newDateIndex].offsetHeight + 'px';
+		// }
+    })
+</script>
+<div class="timeline__event text-component {id == newDateIndex ? classEntering: classLeaving}">
+    <div class="timeline__event-content container">
+        <h1 class="timeline__event-title">Horizontal Timeline</h1>
+        <em class="timeline__event-date">{new Date(date).toDateString()}</em>
+        <p class="timeline__event-description color-contrast-medium">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illum praesentium officia, fugit recusandae ipsa, quia velit nulla adipisci? Consequuntur aspernatur at, eaque hic repellendus sit dicta consequatur quae, ut harum ipsam molestias maxime non nisi reiciendis eligendi! Doloremque quia pariatur harum ea amet quibusdam quisquam, quae, temporibus dolores porro doloribus.
+        </p>
+    </div>
+</div>
